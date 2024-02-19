@@ -4,12 +4,12 @@ $fn = 50;
 difference() {
 	union() {
 		translate(v = [0, 0, -9.0000000000]) {
-			cylinder(h = 18, r = 6.0000000000);
+			cylinder(h = 18, r = 15.0000000000);
 		}
 	}
 	union() {
-		#translate(v = [0, 0, -100.0000000000]) {
-			cylinder(h = 200, r = 1.8000000000);
+		translate(v = [0, 0, -100.0000000000]) {
+			cylinder(h = 200, r = 10);
 		}
 	}
 }

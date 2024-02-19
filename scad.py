@@ -8,16 +8,16 @@ def main(**kwargs):
 
 def make_scad(**kwargs):
     parts = []
-
     # save_type variables
     if True:
         filter = ""
-        #filter = "test"
+        #filter = "spacer_m5_id_25_mm_od_10_mm_wall_thickness_3_mm_depth"
 
         #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
+        #kwargs["overwrite"] = False
         
         #kwargs["modes"] = ["3dpr", "laser", "true"]
         #kwargs["modes"] = ["3dpr"]
@@ -53,7 +53,7 @@ def make_scad(**kwargs):
         #add multiples of five
         for i in range(5, 101, 5):
             depths.append(i)
-        wall_thicknesss = [1,1.5,2,3,4,5,10]
+        wall_thicknesss = [1,1.5,2,2.5,3,3.5,4,4.5,5,10,15,20]
         for internal_diameter in ids:
             for depth in depths:
                 for wall_thickness in wall_thicknesss:
@@ -73,6 +73,9 @@ def make_scad(**kwargs):
                             id_number = float(id_number)
                     part["id_number"] = id_number
                     part["depth"] = depth
+                    part["wall_thickness"] = wall_thickness
+                    wall_thickness_string = str(wall_thickness).replace(".", "_")
+                    part["wall_thickness_string"] = wall_thickness_string
                     od = id_number + wall_thickness * 2
                     part["od"] = od                              
                     #remove numbers after decimal if they are zero          
@@ -87,7 +90,7 @@ def make_scad(**kwargs):
                     internal_diameter_string = f"{internal_diameter}{mm_string}"
                     part["internal_diameter_string"] = internal_diameter_string
                     od_formated = od_formated.replace(".", "_")
-                    part_name = f"spacer_{internal_diameter}{mm_string}_id_{od_formated}_mm_od_{wall_thickness}_mm_wall_thickness_{depth}_mm_depth"
+                    part_name = f"spacer_{internal_diameter}{mm_string}_id_{od_formated}_mm_od_{wall_thickness_string}_mm_wall_thickness_{depth}_mm_depth"
                     part["name"] = part_name
                     parts.append(part)
 
@@ -105,50 +108,7 @@ def make_scad(**kwargs):
             else:
                 print(f"skipping {part['name']}")
 
-def get_test(thing, **kwargs):
 
-    depth = kwargs.get("thickness", 4)
-    prepare_print = kwargs.get("prepare_print", True)
-
-    pos = kwargs.get("pos", [0, 0, 0])
-    #pos = copy.deepcopy(pos)
-    #pos[2] += -20
-
-    #add _cylinder
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"oobb_cylinder"
-    p3["radius"] = 30
-    p3["depth"] = depth
-    #p3["m"] = "#"
-    pos1 = copy.deepcopy(pos)         
-    p3["pos"] = pos1
-    oobb_base.append_full(thing,**p3)
-
-    
-
-    if prepare_print:
-        #put into a rotation object
-        components_second = copy.deepcopy(thing["components"])
-        return_value_2 = {}
-        return_value_2["type"]  = "rotation"
-        return_value_2["typetype"]  = "p"
-        pos1 = copy.deepcopy(pos)
-        pos1[0] += 50
-        return_value_2["pos"] = pos1
-        return_value_2["rot"] = [180,0,0]
-        return_value_2["objects"] = components_second
-        
-        thing["components"].append(return_value_2)
-
-    
-        #add slice # top
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "n"
-        p3["shape"] = f"oobb_slice"
-        #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
-    
 ###### utilities
 
 
@@ -194,12 +154,12 @@ def make_scad_generic(part):
 
 def get_spacer(thing, part, **kwargs):    
     depth = part.get("depth", 3)
-    id = part.get("id", "m3")
-    id_number = part.get("id_number", 3)
+    id = part.get("internal_diameter", "")
+    id_number = part.get("id_number", "")
     
     
-    wall_thickness = part.get("wall_thickness", 1)
-    od = id_number + wall_thickness * 2
+    
+    od = part.get("od", 10)
 
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
@@ -218,7 +178,7 @@ def get_spacer(thing, part, **kwargs):
     else:
         p3["radius_name"] = id
     
-    p3["m"] = "#"
+    #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
 
 

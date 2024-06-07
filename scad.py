@@ -53,7 +53,7 @@ def make_scad(**kwargs):
         #add multiples of five
         for i in range(5, 101, 5):
             depths.append(i)
-        wall_thicknesss = [1,1.5,2,2.5,3,3.5,4,4.5,5,10,15,20]
+        wall_thicknesss = [0.5,0.75,1,1.5,2,2.5,3,3.5,4,4.5,5,10,15,20]
         for internal_diameter in ids:
             for depth in depths:
                 for wall_thickness in wall_thicknesss:

@@ -174,7 +174,7 @@ def get_spacer(thing, part, **kwargs):
     p3["shape"] = f"oobb_hole"
     p3.pop("depth","")
     if id == id_number:
-        p3["radius"] = id
+        p3["radius"] = id / 2
     else:
         p3["radius_name"] = id
     

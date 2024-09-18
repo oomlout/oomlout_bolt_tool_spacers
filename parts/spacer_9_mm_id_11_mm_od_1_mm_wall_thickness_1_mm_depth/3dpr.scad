@@ -9,7 +9,7 @@ difference() {
 	}
 	union() {
 		translate(v = [0, 0, -100.0000000000]) {
-			cylinder(h = 200, r = 9);
+			cylinder(h = 200, r = 4.5000000000);
 		}
 	}
 }

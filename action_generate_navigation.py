@@ -7,7 +7,16 @@ def main(**kwargs):
     folder_parts = "parts"
     #get all folders in parts non recursive    
     folders = os.listdir(folder_parts)
+    #number of folders to process message into string
+    print(f"Processing {len(folders)} folders")
+    count = 0
     for folder in folders:
+        #print a dot for each folder processed
+        count += 1
+        if count % 100 == 0:
+            print(count, end="")
+        if count % 1000 == 0:
+            print(f" {count} folders processed")
         yaml_file = f"{folder_parts}/{folder}/working.yaml"
         if os.path.exists(yaml_file):
             with open(yaml_file, 'r') as file:

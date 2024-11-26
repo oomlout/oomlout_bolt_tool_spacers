@@ -13,9 +13,12 @@ def make_scad(**kwargs):
         filter = ""
         #filter = "spacer_m5_id_25_mm_od_10_mm_wall_thickness_3_mm_depth"
 
-        #kwargs["save_type"] = "none"
-        kwargs["save_type"] = "all"
+        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "all"
         
+        #generate_oomp = False
+        generate_oomp = True
+
         kwargs["overwrite"] = True
         #kwargs["overwrite"] = False
         
@@ -41,12 +44,27 @@ def make_scad(**kwargs):
         part_default["project_name"] = "test" ####### neeeds setting
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
+
+        #oomp stuff
+        part_default["oomp_classification"] = ""
+        part_default["oomp_type"] = ""
+        import os
+        #get current file directory name
+        dir = os.path.basename(os.path.dirname(__file__))
+        part_default["oomp_size"] = f""
+        part_default["oomp_color"] = ""
+        part_default["oomp_description_main"] = ""
+        part_default["oomp_description_extra"] = ""
+        part_default["oomp_manufacturer"] = ""
+        part_default["oomp_part_number"] = ""
         
         ids = ["m2","m2_5","m2_7","m3","m4","m5","m6","m8","m10"]
+        #ids = ["m2"]
         for i in range(2,11):
             ids.append(i)
         
         depths = [1,2,3,4,5,6,7,8,9,10]
+        #depths = [3,6]
         #add multiples of 3 up to 100
         for i in range(3, 101, 3):
             depths.append(i)
@@ -54,6 +72,7 @@ def make_scad(**kwargs):
         for i in range(5, 101, 5):
             depths.append(i)
         wall_thicknesss = [0.5,0.75,1,1.5,2,2.5,3,3.5,4,4.5,5,10,15,20]
+        #wall_thicknesss = [3]
         for internal_diameter in ids:
             for depth in depths:
                 for wall_thickness in wall_thicknesss:
@@ -92,6 +111,25 @@ def make_scad(**kwargs):
                     od_formated = od_formated.replace(".", "_")
                     part_name = f"spacer_{internal_diameter}{mm_string}_id_{od_formated}_mm_od_{wall_thickness_string}_mm_wall_thickness_{depth}_mm_depth"
                     part["name"] = part_name
+
+                    
+                    #oomp definition
+                    if internal_diameter == "m3" or internal_diameter == "m6":
+                        if depth < 37:
+                            if wall_thickness < 11:
+                                part["oomp_classification"] = "oobb"
+                                part["oomp_type"] = "part"
+                                part["oomp_size"] = f"project_github_{dir}"
+                                oomp_color = internal_diameter
+                                if "m" not in str(internal_diameter):
+                                    oomp_color = f"{internal_diameter}_mm"
+                                oomp_color = f"{oomp_color}_id"
+                                part["oomp_color"] = oomp_color
+                                part["oomp_description_main"] = f"{wall_thickness}_mm_wall_thickness"
+                                part["oomp_description_extra"] = f"{depth}_mm_depth"
+                        
+                        
+                    
                     parts.append(part)
 
         
@@ -108,6 +146,10 @@ def make_scad(**kwargs):
             else:
                 print(f"skipping {part['name']}")
 
+
+    if generate_oomp:
+        for part in parts:
+            generate_oomp_routine(part)
 
 ###### utilities
 
@@ -180,6 +222,54 @@ def get_spacer(thing, part, **kwargs):
     
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
+
+def generate_oomp_routine(part):
+    import os
+    import yaml
+    
+    directory_oomp = "oomp_source"
+    classsification = part.get("oomp_classification", "")
+
+    if classsification != "":
+
+        typ = part.get("oomp_type", "")
+        size = part.get("oomp_size", "")
+        color = part.get("oomp_color", "")
+        description_main = part.get("oomp_description_main", "")
+        description_extra = part.get("oomp_description_extra", "")
+
+        naming_order = ["classification", "type", "size", "color", "description_main", "description_extra"]
+
+        oomp_id = ""
+        for i in range(0, len(naming_order)):
+            val = part.get(f"oomp_{naming_order[i]}", "")
+            if val != "":
+                oomp_id += f"{val}_"
+        oomp_id = oomp_id[:-1]
+
+        folder = f"{directory_oomp}/{oomp_id}"
+
+        data = {}
+        for key in naming_order:
+            data[key] = part.get(f"oomp_{key}", "")
+
+        filename = "working.yaml"
+        file_full = f"{folder}/{filename}"
+        #if it doesn't exist
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        
+        #dump to yaml file
+        print(f"making {file_full}")
+        with open(file_full, 'w') as file:
+            yaml.dump(data, file)
+    else:
+        print("no classification")
+        
+
+
+
+
 
 
 if __name__ == '__main__':

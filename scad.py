@@ -191,6 +191,9 @@ def make_scad_generic(part):
     yaml_file = f"{folder}/working.yaml"
     import yaml
     with open(yaml_file, 'w') as file:
+        kwargs_new = part["kwargs"]
+        kwargs_new.pop("save_type","")
+        part["kwargs"] = kwargs_new        
         yaml.dump(part, file)
 
 

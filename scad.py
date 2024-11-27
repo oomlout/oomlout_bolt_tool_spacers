@@ -250,9 +250,12 @@ def generate_oomp_routine(part):
                 oomp_id += f"{val}_"
         oomp_id = oomp_id[:-1]
 
+
+
         folder = f"{directory_oomp}/{oomp_id}"
 
         data = {}
+        data["id"] = oomp_id        
         for key in naming_order:
             data[key] = part.get(f"oomp_{key}", "")
 

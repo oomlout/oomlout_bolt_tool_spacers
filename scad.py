@@ -16,8 +16,9 @@ def make_scad(**kwargs):
         kwargs["save_type"] = "none"
         #kwargs["save_type"] = "all"
         
-        #generate_oomp = False
-        generate_oomp = True
+        #doing the oomp generation in the main loop
+        generate_oomp = False
+        #generate_oomp = True
 
         kwargs["overwrite"] = True
         #kwargs["overwrite"] = False
@@ -127,6 +128,7 @@ def make_scad(**kwargs):
                                 part["oomp_color"] = oomp_color
                                 part["oomp_description_main"] = f"{wall_thickness}_mm_wall_thickness"
                                 part["oomp_description_extra"] = f"{depth}_mm_depth"
+                                generate_oomp_routine(part)
                         
                         
                     
